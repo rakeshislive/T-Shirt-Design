@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="375" height="375" viewBox="0 0 375 375">
+  <defs>
+    <clipPath id="clip-logo">
+      <rect width="375" height="375"/>
+    </clipPath>
+  </defs>
+  <g id="logo" clip-path="url(#clip-logo)">
+    <rect width="375" height="375" fill="rgba(255,255,255,0)"/>
+    <text id="_7" data-name="7" transform="translate(105 365)" fill="#3fbb3b" font-size="500" font-family="SegoeUI, Segoe UI"><tspan x="0" y="0">7</tspan></text>
+  </g>
+</svg>
