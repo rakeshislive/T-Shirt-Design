@@ -1,76 +1,133 @@
 import React, { Component } from "react";
 import { Container, Row } from "reactstrap";
-
+import { BrowserRouter as Router} from 'react-router-dom'
+import { storage } from '../config/firebaseConfig'
+import { saveMeme } from '../store/actions/saveDesignActions';
+import { connect } from 'react-redux'
 // All Components 
 import Header from "./Header";
 import Display from "./Display";
 import Settings from "./Settings";
+import Recent from './Recent';
 
-export default class Main extends Component {
+class Main extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            headerText: 'Header Text',
-            footerText: 'Footer Text',
-            headerColor: 'bg-primary',
-            footerColor: 'bg-info',
-            headerTextColor: 'dark',
-            footerTextColor: 'Black',
-            memeImage: ''
+            textColor: 'dark',
+            background: 'bg-primary',
+            upperText: 'Write upper text',
+            lowerText: 'Write lower text',
+            textSize: 25,
+            textFont: 'Segoe UI',
+            memeImage: 'https://dummyimage.com/vga'
         }
     }
     
-    handleHeaderBgColor = (e) => {
+    handleBackground = (e) => {
         this.setState({
-            headerColor: (e.target.className).slice(4)
+            background: (e.target.className).slice(4)
         })
     }
 
-    handleFooterBgColor = (e) => {
+    handleTextColor = (e) => {
         this.setState({
-            footerColor: (e.target.className).slice(4)
+            textColor: (e.target.className).slice(7)
         })
     }
 
-    handleHeaderTxtColor = (e) => {
+    handleTextSize = (e) => {
         this.setState({
-            headerTextColor: (e.target.className).slice(7)
+            textSize: e.target.value
         })
     }
 
-    handleFooterTxtColor = (e) => {
+    handleUpperText = (e) => {
         this.setState({
-            footerTextColor: (e.target.className).slice(7)
+            upperText: e.target.value
         })
+    }
+
+    handleLowerText = (e) => {
+        this.setState({
+            lowerText: e.target.value
+        })
+    }
+
+    handleTextFont = (e) => {
+        this.setState({
+            textFont: e.target.value
+        })
+    }
+
+    handleImageUpload = (e) => {
+        if(e.target.files[0]) {
+            const image = (e.target.files[0]);
+            const uploadTask = storage.ref(`image/${image.name}`).put(image);
+            uploadTask.on('state_changed',
+            (snapshot) => {
+                console.log(snapshot)
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                storage.ref('image').child(image.name).getDownloadURL().then(url => {
+                    this.setState({memeImage: url})
+                })
+            })
+        }
+    }
+
+    handleSaveMeme = (e) => {
+        if(e.target.id === 'saveMeme') {
+            this.props.saveMeme(this.state)
+        }
     }
 
     render() {
         return(
-            <div>
+            <Router>
                 <Header title="Seven"/>
-                <Container>
+                <Container className="d-flux">
                     <Row style={Outline}>
-                        <div className="col-md-4">
+                        <div className="col-md-5">
                             <Display display={this.state} />
                         </div>
-                        <div className="col-md-8">
+                        <div className="col-md-7">
                             <Settings 
-                                headerColor={this.handleHeaderBgColor}
-                                footerColor={this.handleFooterBgColor}
-                                headerTextColor={this.handleHeaderTxtColor}
-                                footerTextColor={this.handleFooterTxtColor} />
+                                background={this.handleBackground}
+                                textColor={this.handleTextColor}
+                                textSize={this.handleTextSize}
+                                upperText={this.handleUpperText}
+                                lowerText={this.handleLowerText}
+                                uploadImage={this.handleImageUpload}
+                                textFont={this.handleTextFont}
+                                saveMeme={this.handleSaveMeme} />
                         </div>
                     </Row>
+                    <Row className="mt-4">
+                        <Recent />
+                    </Row>
                 </Container>
-            </div>
+            </Router>
         )
     }
 }
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        saveMeme: (design) => dispatch(saveMeme(design))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Main);
 
 const Outline = {
     marginTop: '50px',
     border: '2px solid rgb(173, 149, 147)',
     borderRadius: '5px',
-    textAlign: 'center'
+    textAlign: 'center',
+    padding: '20px'
 }
 
